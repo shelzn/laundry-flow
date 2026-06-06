@@ -1,5 +1,3 @@
-import Link from "next/link"
-
 import { login } from "@/app/actions"
 import { Button } from "@/components/ui/button"
 import {
@@ -40,15 +38,6 @@ export default async function LoginPage() {
             </div>
             <Button className="w-full">Masuk</Button>
           </form>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            Belum ada akun?{" "}
-            <Link
-              className="font-medium text-foreground underline"
-              href="/register"
-            >
-              Buat akun pertama
-            </Link>
-          </p>
         </CardContent>
       </Card>
     </main>

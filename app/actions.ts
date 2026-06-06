@@ -103,41 +103,6 @@ export async function login(formData: FormData) {
   redirect("/");
 }
 
-export async function register(formData: FormData) {
-  const name = requireText(formData, "name", "Nama");
-  const email = requireEmail(formData, "email", "Email");
-  const password = requireText(formData, "password", "Password");
-
-  if (password.length < 8) throw new Error("Password minimal 8 karakter.");
-
-  const [existingUser] = await db
-    .select({ id: users.id })
-    .from(users)
-    .where(eq(users.email, email))
-    .limit(1);
-  if (existingUser) throw new Error("Email sudah terdaftar.");
-
-  const [userCount] = await db
-    .select({ total: sql<number>`count(*)` })
-    .from(users);
-  const role = Number(userCount?.total ?? 0) === 0 ? "admin" : "staff";
-
-  await db.insert(users).values({
-    name,
-    email,
-    passwordHash: await hashPassword(password),
-    role,
-  });
-
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, email))
-    .limit(1);
-  await createSession({ userId: user.id, role: user.role });
-  redirect("/");
-}
-
 export async function logout() {
   await destroySession();
   redirect("/login");
