@@ -203,7 +203,7 @@ export async function createOrder(formData: FormData) {
   revalidateLaundryPaths("/laundry", "/pembayaran");
 }
 
-export async function updateOrderStatus(formData: FormData) {
+export async function updateOrder(formData: FormData) {
   await requireUser();
   const status = text(formData, "status");
   const allowedStatuses = [
@@ -220,16 +220,19 @@ export async function updateOrderStatus(formData: FormData) {
     throw new Error("Status order tidak valid.");
   }
 
-  const completedAt = status === "completed" ? new Date() : null;
-
   await db
     .update(orders)
     .set({
+      customerName: requireText(formData, "customerName", "Nama pelanggan"),
+      customerPhone: text(formData, "customerPhone") || null,
+      customerAddress: text(formData, "customerAddress") || null,
       status: status as typeof orders.$inferInsert.status,
-      completedAt,
+      notes: text(formData, "notes") || null,
+      completedAt: status === "completed" ? new Date() : null,
     })
     .where(eq(orders.id, requireId(formData, "id", "Order")));
-  revalidateLaundryPaths("/laundry");
+
+  revalidateLaundryPaths("/laundry", "/pembayaran");
 }
 
 export async function deleteOrder(formData: FormData) {

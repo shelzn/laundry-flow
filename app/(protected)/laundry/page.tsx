@@ -1,14 +1,11 @@
 import { count, desc, like, or } from "drizzle-orm";
-import { Trash2 } from "lucide-react";
-
 import {
   Pagination,
   SearchForm,
 } from "@/app/(protected)/_components/list-controls";
-import { deleteOrder, updateOrderStatus } from "@/app/actions";
 import { OrderForm } from "@/app/(protected)/_components/order-form";
+import { OrderActions } from "@/app/(protected)/_components/order-actions";
 import { StatusBadge } from "@/app/(protected)/_components/status-badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -16,13 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -34,7 +24,7 @@ import {
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { orders, services } from "@/lib/db/schema";
-import { orderStatus, rupiah, shortDate } from "@/lib/laundry";
+import { rupiah, shortDate } from "@/lib/laundry";
 import {
   getListParams,
   getTotalPages,
@@ -56,10 +46,13 @@ type LaundryOrder = {
   id: number;
   invoiceNumber: string;
   customerName: string;
+  customerPhone: string | null;
+  customerAddress: string | null;
   status: string;
   paymentStatus: string;
   totalPrice: string;
   estimatedDoneAt: Date | null;
+  notes: string | null;
   items: LaundryOrderItem[];
 };
 
@@ -105,10 +98,13 @@ async function getLaundryData(searchParams?: PageSearchParams) {
         id: order.id,
         invoiceNumber: order.invoiceNumber,
         customerName: order.customerName,
+        customerPhone: order.customerPhone,
+        customerAddress: order.customerAddress,
         status: order.status,
         paymentStatus: order.paymentStatus,
         totalPrice: order.totalPrice,
         estimatedDoneAt: order.estimatedDoneAt,
+        notes: order.notes,
         items: order.items.map(
           (item): LaundryOrderItem => ({
             serviceName: item.service.name,
@@ -199,37 +195,10 @@ export default async function LaundryPage({
                       <TableCell>{rupiah(order.totalPrice)}</TableCell>
                       <TableCell>{shortDate(order.estimatedDoneAt)}</TableCell>
                       <TableCell>
-                        <div className="flex min-w-44 gap-2">
-                          <form
-                            action={updateOrderStatus}
-                            className="flex gap-2"
-                          >
-                            <input type="hidden" name="id" value={order.id} />
-                            <Select name="status" defaultValue={order.status}>
-                              <SelectTrigger className="w-full min-w-36">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {orderStatus.map(([key, label]) => (
-                                  <SelectItem key={key} value={key}>
-                                    {label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <Button size="sm" variant="outline">
-                              OK
-                            </Button>
-                          </form>
-                          {currentUser.role === "admin" ? (
-                            <form action={deleteOrder}>
-                              <input type="hidden" name="id" value={order.id} />
-                              <Button size="icon" variant="destructive">
-                                <Trash2 className="size-4" />
-                              </Button>
-                            </form>
-                          ) : null}
-                        </div>
+                        <OrderActions
+                          order={order}
+                          canDelete={currentUser.role === "admin"}
+                        />
                       </TableCell>
                     </TableRow>
                   ))}

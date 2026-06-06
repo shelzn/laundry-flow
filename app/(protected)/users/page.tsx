@@ -5,13 +5,13 @@ import {
   Pagination,
   SearchForm,
 } from "@/app/(protected)/_components/list-controls";
+import { ConfirmSubmitButton } from "@/app/(protected)/_components/confirm-submit-button";
 import { createUser, deleteUser, updateUserRole } from "@/app/actions";
 import {
   FieldInput,
   FieldSelect,
 } from "@/app/(protected)/_components/form-fields";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -96,7 +96,12 @@ export default async function UsersPage({
                   ["admin", "Admin"],
                 ]}
               />
-              <Button className="w-full">Simpan user</Button>
+              <ConfirmSubmitButton
+                className="w-full"
+                message="Simpan user baru?"
+              >
+                Simpan user
+              </ConfirmSubmitButton>
             </form>
           </CardContent>
         </Card>
@@ -138,15 +143,21 @@ export default async function UsersPage({
                     </SelectContent>
                   </Select>
                   <div className="flex gap-2">
-                    <Button variant="outline">Update</Button>
+                    <ConfirmSubmitButton
+                      variant="outline"
+                      message="Update role user ini?"
+                    >
+                      Update
+                    </ConfirmSubmitButton>
                     {row.id !== currentUser.id ? (
-                      <Button
+                      <ConfirmSubmitButton
                         formAction={deleteUser}
                         variant="destructive"
                         size="icon"
+                        message="Hapus user ini?"
                       >
                         <Trash2 className="size-4" />
-                      </Button>
+                      </ConfirmSubmitButton>
                     ) : null}
                   </div>
                 </form>

@@ -1,45 +1,45 @@
-"use client"
+"use client";
 
-import { useMemo, useState } from "react"
-import { Plus } from "lucide-react"
+import { useMemo, useState } from "react";
+import { Plus } from "lucide-react";
 
-import { createOrder } from "@/app/actions"
+import { createOrder } from "@/app/actions";
+import { ConfirmSubmitButton } from "@/app/(protected)/_components/confirm-submit-button";
 import {
   FieldInput,
   FieldSelect,
   FieldTextarea,
-} from "@/app/(protected)/_components/form-fields"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { rupiah } from "@/lib/laundry"
+} from "@/app/(protected)/_components/form-fields";
+import { Card, CardContent } from "@/components/ui/card";
+import { rupiah } from "@/lib/laundry";
 
 export type OrderFormService = {
-  id: number
-  name: string
-  unit: "kg" | "item"
-  price: string
-}
+  id: number;
+  name: string;
+  unit: "kg" | "item";
+  price: string;
+};
 
 export function OrderForm({ services }: { services: OrderFormService[] }) {
-  const [serviceId, setServiceId] = useState("")
-  const [quantity, setQuantity] = useState("")
+  const [serviceId, setServiceId] = useState("");
+  const [quantity, setQuantity] = useState("");
 
   const selectedService = services.find(
-    (service) => String(service.id) === serviceId
-  )
+    (service) => String(service.id) === serviceId,
+  );
   const total = useMemo(() => {
-    const parsedQuantity = Number(quantity)
+    const parsedQuantity = Number(quantity);
 
     if (
       !selectedService ||
       !Number.isFinite(parsedQuantity) ||
       parsedQuantity <= 0
     ) {
-      return 0
+      return 0;
     }
 
-    return Number(selectedService.price) * parsedQuantity
-  }, [quantity, selectedService])
+    return Number(selectedService.price) * parsedQuantity;
+  }, [quantity, selectedService]);
 
   return (
     <form action={createOrder} className="space-y-4">
@@ -78,10 +78,13 @@ export function OrderForm({ services }: { services: OrderFormService[] }) {
         </CardContent>
       </Card>
       <FieldTextarea name="notes" label="Catatan" />
-      <Button className="w-full gap-2">
+      <ConfirmSubmitButton
+        className="w-full gap-2"
+        message="Simpan order laundry baru?"
+      >
         <Plus className="size-4" />
         Simpan order
-      </Button>
+      </ConfirmSubmitButton>
     </form>
-  )
+  );
 }

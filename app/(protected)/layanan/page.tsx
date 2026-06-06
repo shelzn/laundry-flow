@@ -5,13 +5,13 @@ import {
   Pagination,
   SearchForm,
 } from "@/app/(protected)/_components/list-controls";
+import { ConfirmSubmitButton } from "@/app/(protected)/_components/confirm-submit-button";
 import { createService, deleteService, updateService } from "@/app/actions";
 import {
   FieldInput,
   FieldSelect,
   FieldTextarea,
 } from "@/app/(protected)/_components/form-fields";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -98,7 +98,12 @@ export default async function LayananPage({
                 ]}
               />
               <FieldTextarea name="description" label="Deskripsi" />
-              <Button className="w-full">Simpan layanan</Button>
+              <ConfirmSubmitButton
+                className="w-full"
+                message="Simpan layanan baru?"
+              >
+                Simpan layanan
+              </ConfirmSubmitButton>
             </form>
           </CardContent>
         </Card>
@@ -148,15 +153,21 @@ export default async function LayananPage({
                     </SelectContent>
                   </Select>
                   <div className="flex gap-2">
-                    <Button variant="outline">Update</Button>
+                    <ConfirmSubmitButton
+                      variant="outline"
+                      message="Update layanan ini?"
+                    >
+                      Update
+                    </ConfirmSubmitButton>
                     {currentUser.role === "admin" ? (
-                      <Button
+                      <ConfirmSubmitButton
                         formAction={deleteService}
                         variant="destructive"
                         size="icon"
+                        message="Hapus layanan ini?"
                       >
                         <Trash2 className="size-4" />
-                      </Button>
+                      </ConfirmSubmitButton>
                     ) : null}
                   </div>
                 </form>
