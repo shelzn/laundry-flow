@@ -13,12 +13,19 @@ import { logout } from "@/app/actions"
 import { Button } from "@/components/ui/button"
 import type { CurrentUser } from "@/lib/auth"
 
-const navItems = [
+type NavItem = {
+  label: string
+  href: string
+  icon: React.ElementType
+  roles?: readonly CurrentUser["role"][]
+}
+
+const navItems: NavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Buat Laundry", href: "/laundry", icon: ReceiptText },
   { label: "Layanan", href: "/layanan", icon: Sparkles },
   { label: "Pembayaran", href: "/pembayaran", icon: CreditCard },
-  { label: "User", href: "/users", icon: UserCog },
+  { label: "User", href: "/users", icon: UserCog, roles: ["admin"] },
 ]
 
 export function AppShell({
@@ -28,6 +35,10 @@ export function AppShell({
   children: React.ReactNode
   currentUser: CurrentUser
 }) {
+  const visibleNavItems = navItems.filter(
+    (item) => !item.roles || item.roles.includes(currentUser.role)
+  )
+
   return (
     <main className="min-h-svh bg-muted/30">
       <aside className="fixed inset-y-0 left-0 hidden w-64 border-r bg-background lg:block">
@@ -41,7 +52,7 @@ export function AppShell({
           </div>
         </div>
         <nav className="space-y-1 p-4 text-sm">
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <Button
               key={item.href + item.label}
               asChild
@@ -74,7 +85,7 @@ export function AppShell({
             </form>
           </div>
           <nav className="flex gap-2 overflow-x-auto border-t px-4 py-2 lg:hidden">
-            {navItems.map((item) => (
+            {visibleNavItems.map((item) => (
               <Button
                 key={item.href + item.label}
                 asChild
