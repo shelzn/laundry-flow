@@ -9,7 +9,12 @@
 7. Atur database url nya, kalo gaada password berarti formatnya "mysql://root@localhost:3306/laundry_app"
 8. Kalo udah buka phpmyadmin terus bikin database sesuai yg di database url, contoh "laundry_app"
 9. Balik ke cmd atau terminal tadi ketik "bunx drizzle-kit push", abis tuh cek ke databasenya udh muncul semua apa belum tabelnya
-10. Kalo sudah selesai, ketik "bun dev" nanti bakal muncul url "http://localhost:3000"
+10. Untuk nambahin data dummy (untuk user aja) ketik "bun run db:seed:users", nanti otomatis data user bakal ditambah
+11. Kalo sudah selesai, ketik "bun dev" nanti bakal muncul url "http://localhost:3000"
+
+# DUMMY USERS
+- admin@gmail.com | password123
+- staff@gmail.com | password123
 
 # TECH STACK
 - Next.js
