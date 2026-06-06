@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "next/link";
 import {
   CreditCard,
   LayoutDashboard,
@@ -7,18 +7,18 @@ import {
   Shirt,
   Sparkles,
   UserCog,
-} from "lucide-react"
+} from "lucide-react";
 
-import { logout } from "@/app/actions"
-import { Button } from "@/components/ui/button"
-import type { CurrentUser } from "@/lib/auth"
+import { logout } from "@/app/actions";
+import { Button } from "@/components/ui/button";
+import type { CurrentUser } from "@/lib/auth";
 
 type NavItem = {
-  label: string
-  href: string
-  icon: React.ElementType
-  roles?: readonly CurrentUser["role"][]
-}
+  label: string;
+  href: string;
+  icon: React.ElementType;
+  roles?: readonly CurrentUser["role"][];
+};
 
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -26,18 +26,18 @@ const navItems: NavItem[] = [
   { label: "Layanan", href: "/layanan", icon: Sparkles },
   { label: "Pembayaran", href: "/pembayaran", icon: CreditCard },
   { label: "User", href: "/users", icon: UserCog, roles: ["admin"] },
-]
+];
 
 export function AppShell({
   children,
   currentUser,
 }: {
-  children: React.ReactNode
-  currentUser: CurrentUser
+  children: React.ReactNode;
+  currentUser: CurrentUser;
 }) {
   const visibleNavItems = navItems.filter(
-    (item) => !item.roles || item.roles.includes(currentUser.role)
-  )
+    (item) => !item.roles || item.roles.includes(currentUser.role),
+  );
 
   return (
     <main className="min-h-svh bg-muted/30">
@@ -104,5 +104,5 @@ export function AppShell({
         <div className="space-y-6 p-4 md:p-6">{children}</div>
       </section>
     </main>
-  )
+  );
 }

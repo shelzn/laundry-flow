@@ -1,32 +1,60 @@
-import { desc } from "drizzle-orm"
-import { Trash2 } from "lucide-react"
+import { count, desc, like, or } from "drizzle-orm";
+import { Trash2 } from "lucide-react";
 
-import { createService, deleteService, updateService } from "@/app/actions"
+import {
+  Pagination,
+  SearchForm,
+} from "@/app/(protected)/_components/list-controls";
+import { createService, deleteService, updateService } from "@/app/actions";
 import {
   FieldInput,
   FieldSelect,
   FieldTextarea,
-} from "@/app/(protected)/_components/form-fields"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+} from "@/app/(protected)/_components/form-fields";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { requireUser } from "@/lib/auth"
-import { db } from "@/lib/db"
-import { services } from "@/lib/db/schema"
+} from "@/components/ui/select";
+import { requireUser } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { services } from "@/lib/db/schema";
+import {
+  getListParams,
+  getTotalPages,
+  type PageSearchParams,
+} from "@/lib/pagination";
 
-export default async function LayananPage() {
-  const currentUser = await requireUser()
+export default async function LayananPage({
+  searchParams,
+}: {
+  searchParams?: Promise<PageSearchParams>;
+}) {
+  const currentUser = await requireUser();
+  const { query, page, pageSize, offset } = getListParams(await searchParams);
+  const serviceWhere = query
+    ? or(
+        like(services.name, `%${query}%`),
+        like(services.description, `%${query}%`),
+      )
+    : undefined;
+  const [rowCount] = await db
+    .select({ total: count(services.id) })
+    .from(services)
+    .where(serviceWhere);
   const rows = await db
     .select()
     .from(services)
+    .where(serviceWhere)
     .orderBy(desc(services.createdAt))
+    .limit(pageSize)
+    .offset(offset);
+  const totalPages = getTotalPages(rowCount?.total ?? 0, pageSize);
 
   return (
     <>
@@ -45,12 +73,20 @@ export default async function LayananPage() {
           <CardContent>
             <form action={createService} className="space-y-4">
               <FieldInput name="name" label="Nama layanan" required />
-              <FieldInput name="price" label="Harga" type="number" required />
+              <FieldInput
+                name="price"
+                label="Harga"
+                type="number"
+                min={1}
+                required
+              />
               <FieldInput
                 name="estimatedHours"
                 label="Estimasi jam"
                 type="number"
+                min={1}
                 defaultValue={48}
+                required
               />
               <FieldSelect
                 name="unit"
@@ -69,53 +105,76 @@ export default async function LayananPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Daftar layanan</CardTitle>
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <CardTitle>Daftar layanan</CardTitle>
+              <SearchForm
+                action="/layanan"
+                query={query}
+                placeholder="Cari layanan..."
+              />
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {rows.map((row) => (
-              <form
-                key={row.id}
-                action={updateService}
-                className="grid gap-3 rounded-md border p-3 md:grid-cols-[1fr_120px_100px_100px_auto]"
-              >
-                <input type="hidden" name="id" value={row.id} />
-                <Input name="name" defaultValue={row.name} />
-                <Input
-                  name="price"
-                  type="number"
-                  defaultValue={Number(row.price)}
-                />
-                <Input
-                  name="estimatedHours"
-                  type="number"
-                  defaultValue={row.estimatedHours}
-                />
-                <Select name="unit" defaultValue={row.unit}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="kg">Kg</SelectItem>
-                    <SelectItem value="item">Item</SelectItem>
-                  </SelectContent>
-                </Select>
-                <div className="flex gap-2">
-                  <Button variant="outline">Update</Button>
-                  {currentUser.role === "admin" ? (
-                    <Button
-                      formAction={deleteService}
-                      variant="destructive"
-                      size="icon"
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  ) : null}
-                </div>
-              </form>
-            ))}
+            {rows.length ? (
+              rows.map((row) => (
+                <form
+                  key={row.id}
+                  action={updateService}
+                  className="grid gap-3 rounded-md border p-3 md:grid-cols-[1fr_120px_100px_100px_auto]"
+                >
+                  <input type="hidden" name="id" value={row.id} />
+                  <Input name="name" defaultValue={row.name} required />
+                  <Input
+                    name="price"
+                    type="number"
+                    min={1}
+                    defaultValue={Number(row.price)}
+                    required
+                  />
+                  <Input
+                    name="estimatedHours"
+                    type="number"
+                    min={1}
+                    defaultValue={row.estimatedHours}
+                    required
+                  />
+                  <Select name="unit" defaultValue={row.unit}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="kg">Kg</SelectItem>
+                      <SelectItem value="item">Item</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="flex gap-2">
+                    <Button variant="outline">Update</Button>
+                    {currentUser.role === "admin" ? (
+                      <Button
+                        formAction={deleteService}
+                        variant="destructive"
+                        size="icon"
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    ) : null}
+                  </div>
+                </form>
+              ))
+            ) : (
+              <p className="rounded-md border p-4 text-sm text-muted-foreground">
+                Data layanan tidak ditemukan.
+              </p>
+            )}
+            <Pagination
+              pathname="/layanan"
+              query={query}
+              page={page}
+              totalPages={totalPages}
+            />
           </CardContent>
         </Card>
       </div>
     </>
-  )
+  );
 }
