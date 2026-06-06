@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   CreditCard,
+  FileText,
   LayoutDashboard,
   LogOut,
   ReceiptText,
@@ -25,6 +26,7 @@ const navItems: NavItem[] = [
   { label: "Buat Laundry", href: "/laundry", icon: ReceiptText },
   { label: "Layanan", href: "/layanan", icon: Sparkles },
   { label: "Pembayaran", href: "/pembayaran", icon: CreditCard },
+  { label: "Laporan", href: "/laporan", icon: FileText },
   { label: "User", href: "/users", icon: UserCog, roles: ["admin"] },
 ];
 

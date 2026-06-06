@@ -141,7 +141,9 @@
   }
 
   .print-receipt,
-  .print-receipt * {
+  .print-receipt *,
+  .print-report,
+  .print-report * {
     visibility: visible;
   }
 
@@ -157,5 +159,26 @@
     background: #fff;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
+  }
+
+  .print-report {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 0;
+    color: #000;
+    background: #fff;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .print-report [data-slot="card"] {
+    border: 1px solid #ddd;
+    box-shadow: none;
+  }
+
+  .no-print {
+    display: none !important;
   }
 }
