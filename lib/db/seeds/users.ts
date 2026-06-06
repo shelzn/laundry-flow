@@ -9,13 +9,13 @@ async function main() {
         const userSeeds: (typeof usersTable.$inferInsert)[] = [
             {
                 name: "admin",
-                email: "admin@example.com",
+                email: "admin@gmail.com",
                 passwordHash,
                 role: "admin",
             },
             {
                 name: "staff",
-                email: "staff@example.com",
+                email: "staff@gmail.com",
                 passwordHash,
                 role: "staff",
             },

@@ -103,6 +103,26 @@ export async function login(formData: FormData) {
   redirect("/");
 }
 
+export async function loginWithState(
+  _prevState: { error: string },
+  formData: FormData,
+) {
+  const email = requireEmail(formData, "email", "Email");
+  const password = requireText(formData, "password", "Password");
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, email))
+    .limit(1);
+
+  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    return { error: "Email atau password tidak sesuai." };
+  }
+
+  await createSession({ userId: user.id, role: user.role });
+  redirect("/");
+}
+
 export async function logout() {
   await destroySession();
   redirect("/login");
