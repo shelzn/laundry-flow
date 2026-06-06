@@ -17,6 +17,8 @@
 - staff@gmail.com | password123
 
 # TECH STACK
-- Next.js
-- Typescript
-- DrizzleORM (MySQL)
+- [Next.js](https://nextjs.org/)
+- [Typescript](https://www.typescriptlang.org/)
+- [DrizzleORM](https://orm.drizzle.team/) (MySQL)
+- [TailwindCSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
