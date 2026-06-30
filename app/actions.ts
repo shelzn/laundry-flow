@@ -285,6 +285,10 @@ export async function addPayment(formData: FormData) {
 
   if (amount <= 0) throw new Error("Invoice sudah lunas.");
 
+  if (text(formData, "method") === "qris") {
+    redirect(`/pembayaran/qris/${orderId}`);
+  }
+
   const nextPaidAmount = Number(order.paidAmount) + amount;
   let paymentId = 0;
 
